@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+        android:id="@+id/main_liner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/imgItem"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:contentDescription="img status"
+            android:layout_margin="6dp"/>
+
+    <TextView
+        android:id="@+id/tvItemName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/imgItem"
+        android:text="Name"
+        android:textSize="18dp"
+        android:textStyle="bold" />
+        <TextView
+            android:id="@+id/tvItemStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tvItemName"
+            android:layout_toRightOf="@id/imgItem"
+            android:textSize="14dp"
+            android:text="Status"
+            />
+    <TextView
+        android:id="@+id/tvItemSpecies"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tvItemStatus"
+        android:layout_toRightOf="@id/imgItem"
+        android:textSize="14dp"
+        android:text="Species"
+        />
+    <TextView
+        android:id="@+id/tvItemGender"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tvItemSpecies"
+        android:layout_toRightOf="@id/imgItem"
+        android:textSize="14dp"
+        android:text="Gender"
+        />
+
+</RelativeLayout>

@@ -1,0 +1,20 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.example.rickandmorty.MainActivity">
+    <item
+        android:id="@+id/action_Rick"
+        android:orderInCategory="100"
+        android:title="Rick"
+        app:showAsAction="always|withText"/>
+    <item
+        android:id="@+id/action_Morty"
+        android:orderInCategory="100"
+        android:title="Morty"
+        app:showAsAction="always|withText" />
+    <item
+        android:id="@+id/action_All"
+       android:orderInCategory="100"
+        android:title="All"
+        app:showAsAction="always|withText"/>
+</menu>
