@@ -7,7 +7,7 @@ import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.rickandmorty.api.ApiHelper
@@ -40,23 +40,22 @@ class MainActivity : AppCompatActivity() {
         dialog = SpotsDialog.Builder().setCancelable(true).setContext(this).build()
 
 
-        // Задание 1
-        rvMain.setHasFixedSize(true)
-        layoutManager = LinearLayoutManager(this)
-        rvMain.layoutManager = layoutManager
-
+        // Задание 1 begin
+//        rvMain.setHasFixedSize(true)
+//        layoutManager = LinearLayoutManager(this)
+//        rvMain.layoutManager = layoutManager
+//
         mService = RetrofitClient.getClient
-
-        // Задание 2 почти работает )))
-//        setupViewModel("")
-//        setupUI()
-//        setupObservers()
-
+// end
+        // Задание 2 почти работает ))) begin
+        setupViewModel("")
+        setupUI()
+        setupObservers()
+        // end
         //Выборка по статусу персонажа f
         btnAlive.setOnClickListener { getPersonage(currentNamePersonage, "Alive") }
         btnDead.setOnClickListener { getPersonage(currentNamePersonage, "Dead") }
         btnAll.setOnClickListener { getPersonage(currentNamePersonage, "") }
-        //btnAll.setOnClickListener {  }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -87,16 +86,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     //Основной метод загрузки данных с сайта
-    private fun getPersonage(name: String = "", status: String = "") {
+    private fun getPersonage(name: String = "", status: String = "", page: Int = 1) {
         dialog.show()
-        mService.getCharacter(name, status).enqueue(object : Callback<CharacterBase> {
+        mService.getCharacter(name, status, page).enqueue(object : Callback<CharacterBase> {
             override fun onResponse(call: Call<CharacterBase>, response: Response<CharacterBase>) {
-                // println(response.body().toString())
+
                 val tt = response.body() as CharacterBase
+                retrieveList(tt)
 
-                adapter = RecyclerViewAdapter(tt.results)
-
-                rvMain.adapter = adapter
                 dialog.dismiss()
             }
 
@@ -111,10 +108,11 @@ class MainActivity : AppCompatActivity() {
 
     // Задание 2
     private fun setupViewModel(query: String) {
-        viewModel = ViewModelProviders.of(
+        viewModel = ViewModelProvider(
             this,
-            ViewModelFactory(ApiHelper(RetrofitClient.getClient, query))
+            ViewModelFactory(ApiHelper(RetrofitClient.getClient))
         ).get(MainViewModel::class.java)
+
     }
 
     private fun setupUI() {
@@ -158,7 +156,6 @@ class MainActivity : AppCompatActivity() {
             notifyDataSetChanged()
         }
     }
-
 
 }
 
