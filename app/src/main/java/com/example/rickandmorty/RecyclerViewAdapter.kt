@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.rickandmorty.model.Results
 import com.squareup.picasso.Picasso
 
 class RecyclerViewAdapter(private val data: ArrayList<Results>) :
@@ -19,7 +20,6 @@ class RecyclerViewAdapter(private val data: ArrayList<Results>) :
         val tvItemStatus = itemView.findViewById<TextView>(R.id.tvItemStatus)
         val tvItemSpecies = itemView.findViewById<TextView>(R.id.tvItemSpecies)
         val tvItemGender = itemView.findViewById<TextView>(R.id.tvItemGender)
-
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {

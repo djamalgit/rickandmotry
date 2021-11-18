@@ -1,7 +1,7 @@
 package com.example.rickandmorty.api
 
 
-import com.example.rickandmorty.CharacterBase
+import com.example.rickandmorty.model.CharacterBase
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Query

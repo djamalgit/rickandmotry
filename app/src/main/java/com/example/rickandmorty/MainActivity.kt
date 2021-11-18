@@ -1,6 +1,8 @@
 package com.example.rickandmorty
 
 import android.app.AlertDialog
+import android.app.Application
+import android.content.Context
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -10,9 +12,14 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.rickandmorty.DaggerSimple.AppComponent
+import com.example.rickandmorty.DaggerSimple.Computer
+import com.example.rickandmorty.DaggerSimple.DaggerAppComponent
 import com.example.rickandmorty.api.ApiHelper
 import com.example.rickandmorty.api.RetrofitClient
 import com.example.rickandmorty.api.RetrofitQuery
+import com.example.rickandmorty.model.CharacterBase
+import com.example.rickandmorty.model.Results
 import com.example.rickandmorty.viewModel.MainViewModel
 import com.example.rickandmorty.viewModel.ViewModelFactory
 import dmax.dialog.SpotsDialog
@@ -21,9 +28,25 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
+class MainApp: Application()
+{
+    lateinit var appComponent: AppComponent
+    override fun onCreate() {
+        super.onCreate()
+        appComponent = DaggerAppComponent.create()
+    }
+}
+
+val Context.appComponent: AppComponent
+get() = when (this)
+{
+    is MainApp ->appComponent
+    else -> this.applicationContext.appComponent
+}
 
 class MainActivity : AppCompatActivity() {
 
+    private val tmpCharacters: ArrayList<Results> = ArrayList<Results>()
     private var currentNamePersonage: String = ""
     private lateinit var viewModel: MainViewModel
 
@@ -31,28 +54,25 @@ class MainActivity : AppCompatActivity() {
     lateinit var layoutManager: LinearLayoutManager
     lateinit var adapter: RecyclerViewAdapter
     lateinit var dialog: AlertDialog
+    private var page: Int = 1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(findViewById(R.id.toolbarTop))
+
+        val com: Computer = appComponent.computer
+
         // Диалог загрузки
         dialog = SpotsDialog.Builder().setCancelable(true).setContext(this).build()
 
 
-        // Задание 1 begin
-//        rvMain.setHasFixedSize(true)
-//        layoutManager = LinearLayoutManager(this)
-//        rvMain.layoutManager = layoutManager
-//
         mService = RetrofitClient.getClient
-// end
-        // Задание 2 почти работает ))) begin
-        setupViewModel("")
+
+        setupViewModel()
         setupUI()
         setupObservers()
-        // end
-        //Выборка по статусу персонажа f
+
         btnAlive.setOnClickListener { getPersonage(currentNamePersonage, "Alive") }
         btnDead.setOnClickListener { getPersonage(currentNamePersonage, "Dead") }
         btnAll.setOnClickListener { getPersonage(currentNamePersonage, "") }
@@ -86,15 +106,23 @@ class MainActivity : AppCompatActivity() {
     }
 
     //Основной метод загрузки данных с сайта
-    private fun getPersonage(name: String = "", status: String = "", page: Int = 1) {
+    private fun getPersonage(name: String = "", status: String = "") {
         dialog.show()
+
+        if (page > 3) {
+            retrieveList(tmpCharacters!!)
+            tmpCharacters.clear()
+            page = 1
+            dialog.dismiss()
+            return
+        }
+
         mService.getCharacter(name, status, page).enqueue(object : Callback<CharacterBase> {
             override fun onResponse(call: Call<CharacterBase>, response: Response<CharacterBase>) {
 
-                val tt = response.body() as CharacterBase
-                retrieveList(tt)
-
-                dialog.dismiss()
+                tmpCharacters!!.addAll((response.body() as CharacterBase).results)
+                page += 1
+                getPersonage(name, status)
             }
 
             override fun onFailure(call: Call<CharacterBase>, t: Throwable) {
@@ -105,14 +133,12 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
-
     // Задание 2
-    private fun setupViewModel(query: String) {
+    private fun setupViewModel() {
         viewModel = ViewModelProvider(
             this,
             ViewModelFactory(ApiHelper(RetrofitClient.getClient))
         ).get(MainViewModel::class.java)
-
     }
 
     private fun setupUI() {
@@ -133,7 +159,7 @@ class MainActivity : AppCompatActivity() {
                 when (resource.status) {
                     Status.SUCCESS -> {
 
-                        resource.data?.let { character -> retrieveList(character) }
+                        resource.data?.let { character -> retrieveList(character.results) }
                         dialog.dismiss()
                     }
                     Status.ERROR -> {
@@ -150,13 +176,13 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
-    private fun retrieveList(character: CharacterBase) {
+    private fun retrieveList(character: ArrayList<Results>) {
         adapter.apply {
-            addCharacter(character.results)
+            addCharacter(character)
             notifyDataSetChanged()
         }
+        // title = character.count().toString()
     }
-
 }
 
 

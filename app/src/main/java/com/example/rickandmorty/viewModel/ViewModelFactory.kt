@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.rickandmorty.api.ApiHelper
 import com.example.rickandmorty.repository.MainRepository
 
+@Suppress("UNCHECKED_CAST")
 class ViewModelFactory(private val apiHelper: ApiHelper): ViewModelProvider.Factory {
 
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
@@ -14,5 +15,4 @@ class ViewModelFactory(private val apiHelper: ApiHelper): ViewModelProvider.Fact
        }
         throw IllegalArgumentException("Unknown class name")
     }
-
 }
